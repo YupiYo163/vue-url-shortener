@@ -10,9 +10,14 @@
         <div class="shorten__container container">
           <h1 class="shorten__title">Paste the URL to be shortened</h1>
           <div class="shorten__search">
-            <input placeholder="Paste your link" type="text" class="shorten__search-input">
-            <button class="shorten__search-button">Shrink</button>
+            <input placeholder="Example: https://google.com" v-model="link" type="text" class="shorten__search-input">
+            <button @click="shorten" class="shorten__search-button">Shrink</button>
           </div>
+          <p class="shorten__result" v-if="shortenedLink">
+            <a target="_blank" class="shorten__result-link" :href="shortenedLink.result_url">{{
+              shortenedLink.result_url
+            }}</a>
+          </p>
           <p class="shorten__subtitle">Url Shortened is a free tool to shorten a URL. Use URL Shortener to create a
             shortned link and use it anywere</p>
         </div>
@@ -50,11 +55,34 @@ export default {
         { img: "stonks.png", title: "Statistics", description: "You can see stats on how many users have used your shortened urt" },
         { img: "reliable.png", title: "Reliable", description: "We delete any links which is a potential threat tomalware or viruses" },
         { img: "devices.png", title: "Devices", description: "Compatible with smartphones, tablets and desktops" },
-      ]
+      ],
+      link: "",
+      shortenedLink: "",
+      regex: new RegExp("^(http|https)://")
     }
   },
   methods: {
+    shorten() {
+      if (this.regex.test(this.link)) {
+        const encodedParams = new URLSearchParams();
+        encodedParams.append("url", "https://google.com/");
 
+        const options = {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            'X-RapidAPI-Key': '5810ad3a68msha556f21af7078b7p1ad301jsn2883347bbc21',
+            'X-RapidAPI-Host': 'url-shortener-service.p.rapidapi.com'
+          },
+          body: encodedParams
+        };
+
+        fetch('https://url-shortener-service.p.rapidapi.com/shorten', options)
+          .then(response => response.json())
+          .then(response => this.shortenedLink = response)
+          .catch(err => console.error(err));
+      }
+    }
   }
 }
 </script>
@@ -281,38 +309,81 @@ body {
   background: #222222;
 }
 
-.advantages{
+.advantages {
   margin: 60px 0px;
 }
 
-.advantages__container{
+.advantages__container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 
-.advantages__item{
+.advantages__item {
   flex: 0 0 33.3333%;
   margin: 0 50px 50px 50px;
 }
 
-.advantages__item-subtitle{
+.advantages__item-subtitle {
   text-align: center;
   color: #fff;
   font-size: 16px;
   text-transform: uppercase;
   font-family: "Roboto", sans-serif;
 }
-.advantages__item-title{
+
+.advantages__item-title {
   text-align: center;
   color: #fff;
   font-size: 16px;
   text-transform: uppercase;
   font-family: "Roboto", sans-serif;
 }
-.advantages__item-img img{
+
+.advantages__item-img img {
   margin: 0 auto;
   display: block;
 }
 
+.shorten__result-link {
+  color: purple;
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
+}
+
+@media (max-width: 641px) {
+  .advantages__container {
+    display: block;
+    margin: 0;
+  }
+}
+
+@media (max-width:590px) {
+  .footer__container{
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .footer__creator{
+    margin-bottom: 10px;
+  }
+  .footer__creator:first-child{
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 429px) {
+  .shorten__search {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shorten__search-button {
+    margin: 20px 0 0 0;
+  }
+
+  .shorten__search-input {
+    width: 100%;
+  }
+}
 </style>
