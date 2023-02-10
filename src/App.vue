@@ -10,7 +10,7 @@
         <div class="shorten__container container">
           <h1 class="shorten__title">Paste the URL to be shortened</h1>
           <div class="shorten__search">
-            <input placeholder="Example: https://google.com" v-model="link" type="text" class="shorten__search-input">
+            <input placeholder="Ссылка должна начинаться с https://" v-model="link" type="text" class="shorten__search-input">
             <button @click="shorten" class="shorten__search-button">Shrink</button>
           </div>
           <p class="shorten__result" v-if="shortenedLink">
@@ -58,14 +58,14 @@ export default {
       ],
       link: "",
       shortenedLink: "",
-      regex: new RegExp("^(http|https)://")
+      regex: new RegExp("^https://")
     }
   },
   methods: {
     shorten() {
       if (this.regex.test(this.link)) {
         const encodedParams = new URLSearchParams();
-        encodedParams.append("url", "https://google.com/");
+        encodedParams.append("url", this.link.trim().toLowerCase());
 
         const options = {
           method: 'POST',
@@ -80,7 +80,7 @@ export default {
         fetch('https://url-shortener-service.p.rapidapi.com/shorten', options)
           .then(response => response.json())
           .then(response => this.shortenedLink = response)
-          .catch(err => console.error(err));
+          .catch(err => alert(err));
       }
     }
   }
